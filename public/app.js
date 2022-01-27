@@ -1,14 +1,14 @@
 const myMap = {
+    coordinates: [],
+    businesses: [],
     map: {},
     markers: {},
-	coordinates: [],
-	businesses: [],
-
+	
 	// build map
 	buildMap() {
 		this.map = L.map('map', {
 		center: this.coordinates,
-		zoom: 11,
+		zoom: 10,
 		});
 		// add tiles
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -23,11 +23,8 @@ const myMap = {
 
 	// add markers
 	addMarkers() {
-		for (var i = 0; i < this.businesses.length; i++) {
-		this.markers = L.marker([
-			this.businesses[i].lat,
-			this.businesses[i].long,
-		])
+		for (let i = 0; i < this.businesses.length; i++) {
+		this.markers = L.marker([this.businesses[i].lat, this.businesses[i].long,])
 			.bindPopup(`<p1><b>${this.businesses[i].name}</b></p1>`)
 			.addTo(this.map)
 		}
@@ -63,7 +60,7 @@ async function fourSquare(bus) {
 function mapBusinesses(object) {
     let businesses = object.map((element) => {
         let location = {
-            name: object.name,
+            name: element.name,
             lat: element.geocodes.main.latitude,
             long: element.geocodes.main.longitude
         };
@@ -71,22 +68,19 @@ function mapBusinesses(object) {
     })
     return businesses
 }
-window.onload = async function() {
+
+window.onload = async () => {
     const coords = await getCoords()
     myMap.coordinates = coords
     myMap.buildMap()
 }
 
-
-let buttons = document.querySelectorAll('button')
-
-buttons.forEach(button => {
-     button.addEventListener('click', async (event) => {
-         event.preventDefault()
-         let bus = button.textcontent
-         let object = await fourSquare(bus)
-         myMap.businesses = mapBusinesses(object)
-         myMap.addMarkers()
-    })
+document.getElementById('submit').addEventListener('click', async (event) => {
+    event.preventDefault()
+    let bus = document.getElementById('business').value
+    let object = await fourSquare(bus)
+    myMap.businesses = mapBusinesses(object)
+    myMap.addMarkers()
 })
+
 // api key fsq3qBIn6IqC1LPXwLD8qeAD6cHDIruOv9rgrZccRuShriU=
